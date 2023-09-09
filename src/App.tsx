@@ -1,15 +1,17 @@
 import { useState } from 'react';
 
 import Tab from './Tab';
+import Images from './Images';
+import Predictions from './Predictions';
 
 const TABS = [
   {
     label: 'IMAGES',
-    child: <div>Images</div>,
+    child: <Images />,
   },
   {
     label: 'PREDICTIONS',
-    child: <div>Predictions</div>,
+    child: <Predictions />,
   },
 ];
 
