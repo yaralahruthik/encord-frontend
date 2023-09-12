@@ -1,5 +1,6 @@
 import Button from './Button';
-import TableData from './TableData';
+import TableDataCell from './TableDataCell';
+import TableHeaderCell from './TableHeaderCell';
 import TableRow from './TableRow';
 
 const Images = () => {
@@ -7,24 +8,24 @@ const Images = () => {
     <div className='flex w-full flex-col'>
       <table className='table-fixed border-collapse'>
         <thead>
-          <tr>
-            <th>Filename</th>
-            <th>Size</th>
-            <th>Upload Time</th>
-            <th></th>
-          </tr>
+          <TableRow>
+            <TableHeaderCell>Filename</TableHeaderCell>
+            <TableHeaderCell>Size</TableHeaderCell>
+            <TableHeaderCell>Upload Time</TableHeaderCell>
+            <TableHeaderCell></TableHeaderCell>
+          </TableRow>
         </thead>
         <tbody>
           <TableRow>
-            <TableData>
+            <TableDataCell>
               The Sliding Mr. Bones (Next Stop, Pottersville)
-            </TableData>
+            </TableDataCell>
 
-            <TableData>Malcolm Lockyer</TableData>
-            <TableData>1961</TableData>
-            <TableData>
+            <TableDataCell>Malcolm Lockyer</TableDataCell>
+            <TableDataCell>1961</TableDataCell>
+            <TableDataCell>
               <Button>Predict</Button>
-            </TableData>
+            </TableDataCell>
           </TableRow>
         </tbody>
       </table>
