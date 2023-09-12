@@ -1,7 +1,7 @@
-import Button from './Button';
-import TableDataCell from './TableDataCell';
-import TableHeaderCell from './TableHeaderCell';
-import TableRow from './TableRow';
+import Button from './components/Button';
+import TableDataCell from './components/TableDataCell';
+import TableHeaderCell from './components/TableHeaderCell';
+import TableRow from './components/TableRow';
 
 const Images = () => {
   return (
