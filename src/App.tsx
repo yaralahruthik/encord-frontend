@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import Tab from './Tab';
+import Tab from './components/Tab';
 import Images from './Images';
 import Predictions from './Predictions';
 
