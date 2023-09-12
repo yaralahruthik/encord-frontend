@@ -1,8 +1,8 @@
 import { IImage } from './Images';
-import Button from './components/Button';
-import TableDataCell from './components/TableDataCell';
-import TableRow from './components/TableRow';
-import { bytesToKB, formatMillisecondsToDateTime } from './utils';
+import TableDataCell from '../../components/TableDataCell';
+import TableRow from '../../components/TableRow';
+import { bytesToKB, formatMillisecondsToDateTime } from '../../utils';
+import PredictButtonWithDialog from './PredictButtonWithDialog';
 
 interface Props {
   image: IImage;
@@ -19,7 +19,7 @@ const UploadedImage = ({ image }: Props) => {
         {formatMillisecondsToDateTime(image.uploadTime)}
       </TableDataCell>
       <TableDataCell>
-        <Button className='uppercase'>Predict</Button>
+        <PredictButtonWithDialog />
       </TableDataCell>
     </TableRow>
   );

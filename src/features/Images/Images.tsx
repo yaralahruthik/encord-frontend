@@ -1,7 +1,7 @@
 import { ChangeEvent, useState } from 'react';
 
-import TableHeaderCell from './components/TableHeaderCell';
-import TableRow from './components/TableRow';
+import TableHeaderCell from '../../components/TableHeaderCell';
+import TableRow from '../../components/TableRow';
 import UploadedImage from './UploadedImage';
 
 export interface IImage {

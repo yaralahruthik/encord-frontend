@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import Tab from './components/Tab';
-import Images from './Images';
+import Images from './features/Images';
 import Predictions from './Predictions';
 
 const TABS = [
