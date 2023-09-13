@@ -7,6 +7,7 @@ import UploadedImage from './UploadedImage';
 export interface IImage {
   file: File;
   uploadTime: number;
+  id: string;
 }
 
 const Images = () => {
@@ -20,6 +21,7 @@ const Images = () => {
         localImages.push({
           file: e.currentTarget.files[idx],
           uploadTime: Date.now(),
+          id: `${Date.now()}-${idx}`,
         });
         idx++;
       }
@@ -57,7 +59,7 @@ const Images = () => {
           </thead>
           <tbody>
             {images.map((image) => (
-              <UploadedImage key={image.file.name} image={image} />
+              <UploadedImage key={image.id} image={image} />
             ))}
           </tbody>
         </table>
