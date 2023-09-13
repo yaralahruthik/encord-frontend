@@ -2,15 +2,15 @@ import { FormEvent, useContext, useState } from 'react';
 import ReactModal from 'react-modal';
 
 import Button from '../../components/Button';
-import { TabContext, TodoContext } from '../../App';
 import { TabEnum } from '../../CONSTANTS';
+import { TabContext } from '../../providers/TabProvider';
 
 interface Props {
   imageId: string;
 }
 
 const PredictButtonWithDialog = ({ imageId }: Props) => {
-  const { setTab } = useContext(TabContext) as TodoContext;
+  const { setTab } = useContext(TabContext) as TabContext;
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -82,9 +82,6 @@ const PredictButtonWithDialog = ({ imageId }: Props) => {
       setIsOpen(false);
       setIsLoading(false);
 
-      // nit: I would usually save this to a reducer or redux in this particular case
-      // However, in a more practical application, the responses would be cached with
-      // a library like React Query to avoid redundant network calls.
       setTab(TabEnum.PREDICTIONS);
       return resp.json();
     } catch (e) {
