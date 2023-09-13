@@ -3,6 +3,7 @@ import { useContext } from 'react';
 import TableHeaderCell from '../../components/TableHeaderCell';
 import TableRow from '../../components/TableRow';
 import { PredictionsContext } from '../../providers/PredictionsContext';
+import PredictedImage from './PredictedImage';
 
 const Predictions = () => {
   const { predictedImages } = useContext(
@@ -23,11 +24,11 @@ const Predictions = () => {
               <TableHeaderCell></TableHeaderCell>
             </TableRow>
           </thead>
-          {/* <tbody>
-        {predictedImages.map((image) => (
-          <PredictedImage key={image.id} image={image} />
-        ))}
-      </tbody> */}
+          <tbody>
+            {predictedImages.map((image) => (
+              <PredictedImage key={image.id} image={image} />
+            ))}
+          </tbody>
         </table>
       )}
     </div>

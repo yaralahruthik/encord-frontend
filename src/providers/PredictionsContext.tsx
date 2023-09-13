@@ -15,6 +15,7 @@ export interface IPredictedImage {
   title: string;
   description: string;
   id: string;
+  timeOfPrediction: number;
   predictions: IPrediction[];
 }
 

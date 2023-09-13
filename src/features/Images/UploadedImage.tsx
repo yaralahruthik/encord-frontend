@@ -19,7 +19,7 @@ const UploadedImage = ({ image }: Props) => {
         {formatMillisecondsToDateTime(image.uploadTime)}
       </TableDataCell>
       <TableDataCell>
-        <PredictButtonWithDialog imageId={image.id} />
+        <PredictButtonWithDialog image={image} />
       </TableDataCell>
     </TableRow>
   );

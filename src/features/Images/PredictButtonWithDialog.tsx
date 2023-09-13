@@ -4,13 +4,18 @@ import ReactModal from 'react-modal';
 import Button from '../../components/Button';
 import { TabEnum } from '../../CONSTANTS';
 import { TabContext } from '../../providers/TabProvider';
+import { PredictionsContext } from '../../providers/PredictionsContext';
+import { IImage } from './Images';
 
 interface Props {
-  imageId: string;
+  image: IImage;
 }
 
-const PredictButtonWithDialog = ({ imageId }: Props) => {
+const PredictButtonWithDialog = ({ image }: Props) => {
   const { setTab } = useContext(TabContext) as TabContext;
+  const { predictedImages, setPredictedImages } = useContext(
+    PredictionsContext,
+  ) as PredictionsContext;
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -39,10 +44,11 @@ const PredictButtonWithDialog = ({ imageId }: Props) => {
         body: JSON.stringify({
           title: title.value,
           description: description.value,
-          id: imageId,
-          // These are taken from the HardCoded JSON Value
-          // As the request to json-server updates the values in db.json
-          // But these should be coming from the server if not mocked
+          // In a real world use case, an ID would be used to track the image being predicted
+          // Usually the image is uploaded to a storage bucket
+          id: image.id,
+          timeOfPrediction: Date.now(),
+          // Need to hardcode this due to json-server overwriting it
           predictions: [
             {
               bbox: {
@@ -78,12 +84,14 @@ const PredictButtonWithDialog = ({ imageId }: Props) => {
         }),
       });
 
+      const data = await resp.json();
+
       setError('');
       setIsOpen(false);
       setIsLoading(false);
 
       setTab(TabEnum.PREDICTIONS);
-      return resp.json();
+      setPredictedImages([...predictedImages, data]);
     } catch (e) {
       setIsLoading(false);
       setError((e as { message: string }).message);
@@ -103,8 +111,8 @@ const PredictButtonWithDialog = ({ imageId }: Props) => {
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            width: '60%',
-            height: '60%',
+            width: '80%',
+            height: '80%',
           },
         }}
       >
