@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 
 import Button from '../../components/Button';
 import {
@@ -19,34 +19,32 @@ const ViewButtonWithDialog = ({ image }: Props) => {
 
   const { predictions } = image;
 
-  useEffect(() => {
-    if (!imageRef || !imageRef.current) return;
+  const normalizePredictions = (predictions: IPrediction[]) => {
+    return predictions.map((prediction) => {
+      const { bbox } = prediction;
 
-    const normalizePredictions = () => {
-      return predictions.map((prediction) => {
-        const { bbox } = prediction;
+      const oldX = bbox.x1;
+      const oldY = bbox.y1;
+      const oldWidth = bbox.x2 - bbox.x1;
+      const oldHeight = bbox.y2 - bbox.y1;
 
-        const oldX = bbox.x1;
-        const oldY = bbox.y1;
-        const oldWidth = bbox.x2 - bbox.x1;
-        const oldHeight = bbox.y2 - bbox.y1;
+      const originalImgWidth = imageRef.current!.naturalWidth;
+      const originalImgHeight = imageRef.current!.naturalHeight;
+      const curImgWidth = imageRef.current!.width;
+      const curImgHeight = imageRef.current!.height;
 
-        const originalImgWidth = imageRef.current!.naturalWidth;
-        const originalImgHeight = imageRef.current!.naturalHeight;
-        const curImgWidth = imageRef.current!.width;
-        const curImgHeight = imageRef.current!.height;
+      const x = (oldX * curImgWidth) / originalImgWidth;
+      const y = (oldY * curImgHeight) / originalImgHeight;
+      const width = (oldWidth * curImgWidth) / originalImgWidth;
+      const height = (oldHeight * curImgHeight) / originalImgHeight;
 
-        const x = (oldX * curImgWidth) / originalImgWidth;
-        const y = (oldY * curImgHeight) / originalImgHeight;
-        const width = (oldWidth * curImgWidth) / originalImgWidth;
-        const height = (oldHeight * curImgHeight) / originalImgHeight;
+      return { ...prediction, bbox: { x1: x, y1: y, x2: width, y2: height } };
+    });
+  };
 
-        return { ...prediction, bbox: { x1: x, y1: y, x2: width, y2: height } };
-      });
-    };
-
-    setNormalizedPred(normalizePredictions());
-  }, [predictions]);
+  const handleLoad = () => {
+    setNormalizedPred(normalizePredictions(predictions));
+  };
 
   return (
     <>
@@ -68,6 +66,7 @@ const ViewButtonWithDialog = ({ image }: Props) => {
           <div className='flex flex-col gap-4'>
             <div className='relative'>
               <img
+                onLoad={handleLoad}
                 ref={imageRef}
                 className='absolute'
                 src={new URL('../../assets/img_1.jpg', import.meta.url).href}
