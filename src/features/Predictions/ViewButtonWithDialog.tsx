@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import Button from '../../components/Button';
 import {
@@ -7,6 +7,8 @@ import {
 } from '../../providers/PredictionsContext';
 import useModal from '../../hooks/useModal';
 import Modal from '../../components/Modal';
+import PredictionBox from './PredictionBox';
+import { normalizePredictions } from './utils';
 
 interface Props {
   image: IPredictedImage;
@@ -14,72 +16,30 @@ interface Props {
 
 const ViewButtonWithDialog = ({ image }: Props) => {
   const imageRef = useRef<HTMLImageElement>(null);
+  const predictionsRef = useRef(image.predictions);
   const { isOpen, open, close } = useModal();
   const [normalizedPred, setNormalizedPred] = useState<IPrediction[]>([]);
 
-  const { predictions } = image;
-
-  const handleLoad = () => {
-    setNormalizedPred(normalizePredictions(predictions));
-  };
+  const handleResize = useCallback(() => {
+    if (!imageRef.current) return null;
+    setNormalizedPred(
+      normalizePredictions(
+        predictionsRef.current,
+        imageRef.current?.naturalWidth,
+        imageRef.current?.naturalHeight,
+        imageRef.current?.width,
+        imageRef.current?.height,
+      ),
+    );
+  }, []);
 
   useEffect(() => {
-    const handleResize = () => {
-      setNormalizedPred(normalizePredictions(predictions));
-    };
-
-    const normalizePredictions = (predictions: IPrediction[]) => {
-      return predictions.map((prediction) => {
-        const { bbox } = prediction;
-
-        const oldX = bbox.x1;
-        const oldY = bbox.y1;
-        const oldWidth = bbox.x2 - bbox.x1;
-        const oldHeight = bbox.y2 - bbox.y1;
-
-        const originalImgWidth = imageRef.current!.naturalWidth;
-        const originalImgHeight = imageRef.current!.naturalHeight;
-        const curImgWidth = imageRef.current!.width;
-        const curImgHeight = imageRef.current!.height;
-
-        const x = (oldX * curImgWidth) / originalImgWidth;
-        const y = (oldY * curImgHeight) / originalImgHeight;
-        const width = (oldWidth * curImgWidth) / originalImgWidth;
-        const height = (oldHeight * curImgHeight) / originalImgHeight;
-
-        return { ...prediction, bbox: { x1: x, y1: y, x2: width, y2: height } };
-      });
-    };
-
     window.addEventListener('resize', handleResize);
 
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, [predictions]);
-
-  const normalizePredictions = (predictions: IPrediction[]) => {
-    return predictions.map((prediction) => {
-      const { bbox } = prediction;
-
-      const oldX = bbox.x1;
-      const oldY = bbox.y1;
-      const oldWidth = bbox.x2 - bbox.x1;
-      const oldHeight = bbox.y2 - bbox.y1;
-
-      const originalImgWidth = imageRef.current!.naturalWidth;
-      const originalImgHeight = imageRef.current!.naturalHeight;
-      const curImgWidth = imageRef.current!.width;
-      const curImgHeight = imageRef.current!.height;
-
-      const x = (oldX * curImgWidth) / originalImgWidth;
-      const y = (oldY * curImgHeight) / originalImgHeight;
-      const width = (oldWidth * curImgWidth) / originalImgWidth;
-      const height = (oldHeight * curImgHeight) / originalImgHeight;
-
-      return { ...prediction, bbox: { x1: x, y1: y, x2: width, y2: height } };
-    });
-  };
+  }, [handleResize]);
 
   return (
     <>
@@ -101,33 +61,21 @@ const ViewButtonWithDialog = ({ image }: Props) => {
           <div className='flex flex-col gap-4'>
             <div className='relative'>
               <img
-                onLoad={handleLoad}
+                onLoad={handleResize}
                 ref={imageRef}
                 className='absolute'
                 src={new URL('../../assets/img_1.jpg', import.meta.url).href}
               />
               {normalizedPred.map((item) => (
-                <div
+                <PredictionBox
                   key={item.label}
-                  className='absolute'
-                  style={{
-                    top: item.bbox.y1,
-                    left: item.bbox.x1,
-                    width: item.bbox.x2,
-                    height: item.bbox.y2,
-                    border: '2px solid blue',
-                    background:
-                      'linear-gradient(rgba(0,0,255,.1), rgba(0,0,255,.1))',
-                    display: 'flex',
-                    color: 'blue',
-                    justifyContent: 'flex-end',
-                    alignItems: 'flex-end',
-                    flexGrow: 1,
-                    zIndex: 10,
-                  }}
-                >
-                  {item.label} ({(+item.score * 100).toFixed(0)}%)
-                </div>
+                  score={item.score}
+                  label={item.label}
+                  x1={item.bbox.x1}
+                  x2={item.bbox.x2}
+                  y1={item.bbox.y1}
+                  y2={item.bbox.y2}
+                />
               ))}
             </div>
           </div>
