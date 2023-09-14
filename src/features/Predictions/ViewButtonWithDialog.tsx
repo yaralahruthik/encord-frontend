@@ -20,6 +20,8 @@ const ViewButtonWithDialog = ({ image }: Props) => {
   const { isOpen, open, close } = useModal();
   const [normalizedPred, setNormalizedPred] = useState<IPrediction[]>([]);
 
+  // I would ideally debounce this for the sake of performance
+  // though with small amount of prediction items, it should not be an issue!
   const handleResize = useCallback(() => {
     if (!imageRef.current) return null;
     setNormalizedPred(
