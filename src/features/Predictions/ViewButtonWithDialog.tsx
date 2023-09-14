@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import Button from '../../components/Button';
 import {
@@ -18,6 +18,45 @@ const ViewButtonWithDialog = ({ image }: Props) => {
   const [normalizedPred, setNormalizedPred] = useState<IPrediction[]>([]);
 
   const { predictions } = image;
+
+  const handleLoad = () => {
+    setNormalizedPred(normalizePredictions(predictions));
+  };
+
+  useEffect(() => {
+    const handleResize = () => {
+      setNormalizedPred(normalizePredictions(predictions));
+    };
+
+    const normalizePredictions = (predictions: IPrediction[]) => {
+      return predictions.map((prediction) => {
+        const { bbox } = prediction;
+
+        const oldX = bbox.x1;
+        const oldY = bbox.y1;
+        const oldWidth = bbox.x2 - bbox.x1;
+        const oldHeight = bbox.y2 - bbox.y1;
+
+        const originalImgWidth = imageRef.current!.naturalWidth;
+        const originalImgHeight = imageRef.current!.naturalHeight;
+        const curImgWidth = imageRef.current!.width;
+        const curImgHeight = imageRef.current!.height;
+
+        const x = (oldX * curImgWidth) / originalImgWidth;
+        const y = (oldY * curImgHeight) / originalImgHeight;
+        const width = (oldWidth * curImgWidth) / originalImgWidth;
+        const height = (oldHeight * curImgHeight) / originalImgHeight;
+
+        return { ...prediction, bbox: { x1: x, y1: y, x2: width, y2: height } };
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [predictions]);
 
   const normalizePredictions = (predictions: IPrediction[]) => {
     return predictions.map((prediction) => {
@@ -40,10 +79,6 @@ const ViewButtonWithDialog = ({ image }: Props) => {
 
       return { ...prediction, bbox: { x1: x, y1: y, x2: width, y2: height } };
     });
-  };
-
-  const handleLoad = () => {
-    setNormalizedPred(normalizePredictions(predictions));
   };
 
   return (
