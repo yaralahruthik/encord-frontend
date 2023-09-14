@@ -1,11 +1,12 @@
 import { FormEvent, useContext, useState } from 'react';
-import ReactModal from 'react-modal';
 
 import Button from '../../components/Button';
 import { TabEnum } from '../../CONSTANTS';
 import { TabContext } from '../../providers/TabProvider';
 import { PredictionsContext } from '../../providers/PredictionsContext';
 import { IImage } from './Images';
+import Modal from '../../components/Modal';
+import useModal from '../../hooks/useModal';
 
 interface Props {
   image: IImage;
@@ -16,13 +17,9 @@ const PredictButtonWithDialog = ({ image }: Props) => {
   const { predictedImages, setPredictedImages } = useContext(
     PredictionsContext,
   ) as PredictionsContext;
-  const [isOpen, setIsOpen] = useState(false);
+  const { isOpen, open, close } = useModal();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-
-  const toggleDialog = () => {
-    setIsOpen((prev) => !prev);
-  };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -87,7 +84,7 @@ const PredictButtonWithDialog = ({ image }: Props) => {
       const data = await resp.json();
 
       setError('');
-      setIsOpen(false);
+      close();
       setIsLoading(false);
 
       setTab(TabEnum.PREDICTIONS);
@@ -100,22 +97,10 @@ const PredictButtonWithDialog = ({ image }: Props) => {
 
   return (
     <>
-      <Button onClick={toggleDialog} className='uppercase'>
+      <Button onClick={open} className='uppercase'>
         Predict
       </Button>
-      <ReactModal
-        isOpen={isOpen}
-        onRequestClose={toggleDialog}
-        style={{
-          content: {
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: '80%',
-            height: '80%',
-          },
-        }}
-      >
+      <Modal isOpen={isOpen} onClose={close}>
         {isLoading ? (
           <div className='flex h-full items-center justify-center font-medium'>
             Predicting...
@@ -125,7 +110,7 @@ const PredictButtonWithDialog = ({ image }: Props) => {
             <div className='flex items-center justify-between'>
               <span className='text-lg font-medium'>Predict</span>
               <Button
-                onClick={toggleDialog}
+                onClick={close}
                 type='button'
                 className='flex h-8 w-8 items-center justify-center rounded-full bg-black'
               >
@@ -157,14 +142,14 @@ const PredictButtonWithDialog = ({ image }: Props) => {
             </div>
             {error && <div className='text-red-500'>{error}</div>}
             <div className='flex grow items-end gap-4 self-end'>
-              <Button type='button' variant='text' onClick={toggleDialog}>
+              <Button type='button' variant='text' onClick={close}>
                 Cancel
               </Button>
               <Button type='submit'>Submit</Button>
             </div>
           </form>
         )}
-      </ReactModal>
+      </Modal>
     </>
   );
 };

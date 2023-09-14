@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import ReactModal from 'react-modal';
 
 import Button from '../../components/Button';
 import {
   IPredictedImage,
   IPrediction,
 } from '../../providers/PredictionsContext';
+import useModal from '../../hooks/useModal';
+import Modal from '../../components/Modal';
 
 interface Props {
   image: IPredictedImage;
@@ -13,12 +14,8 @@ interface Props {
 
 const ViewButtonWithDialog = ({ image }: Props) => {
   const imageRef = useRef<HTMLImageElement>(null);
-  const [isOpen, setIsOpen] = useState(false);
+  const { isOpen, open, close } = useModal();
   const [normalizedPred, setNormalizedPred] = useState<IPrediction[]>([]);
-
-  const toggleDialog = () => {
-    setIsOpen((prev) => !prev);
-  };
 
   const { predictions } = image;
 
@@ -53,27 +50,15 @@ const ViewButtonWithDialog = ({ image }: Props) => {
 
   return (
     <>
-      <Button onClick={toggleDialog} className='uppercase'>
+      <Button onClick={open} className='uppercase'>
         View
       </Button>
-      <ReactModal
-        isOpen={isOpen}
-        onRequestClose={toggleDialog}
-        style={{
-          content: {
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: '80%',
-            height: '80%',
-          },
-        }}
-      >
+      <Modal isOpen={isOpen} onClose={close}>
         <div className='flex h-full flex-col gap-4'>
           <div className='flex items-center justify-between'>
             <span className='text-lg font-medium'>View</span>
             <Button
-              onClick={toggleDialog}
+              onClick={close}
               type='button'
               className='flex h-8 w-8 items-center justify-center rounded-full bg-black'
             >
@@ -113,7 +98,7 @@ const ViewButtonWithDialog = ({ image }: Props) => {
             </div>
           </div>
         </div>
-      </ReactModal>
+      </Modal>
     </>
   );
 };
